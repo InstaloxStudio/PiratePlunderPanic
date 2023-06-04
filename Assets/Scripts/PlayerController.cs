@@ -3,12 +3,16 @@ using UnityEngine;
 // PlayerController script
 public class PlayerController : NetworkBehaviour
 {
-    [SyncVar]
-    public GameObject _playerCharacter;
+    [SerializeField]
+    private PlayerCharacter _playerCharacter;
 
     // On start, if this is the local player, spawn the player character
     public override void OnStartLocalPlayer()
     {
+        //rename gameobject to LocalPlayerController
+        gameObject.name = "LocalPlayerController";
+
+
         CmdSpawnPlayerCharacter();
     }
 
@@ -16,30 +20,50 @@ public class PlayerController : NetworkBehaviour
     [Command]
     private void CmdSpawnPlayerCharacter()
     {
-        // Instantiate the player character and set it as a child of this controller
-        _playerCharacter = Instantiate(NetworkManager.singleton.spawnPrefabs[0], transform.position, Quaternion.identity);
-        NetworkServer.Spawn(_playerCharacter, connectionToClient);
+        //Instantiate the player character and set it as a child of this controller
+        var prefab = Instantiate(NetworkManager.singleton.spawnPrefabs[0], transform.position, Quaternion.identity);
 
-        // Set the player character on all clients
-        RpcSetPlayerCharacter(_playerCharacter);
+
+
+
+        _playerCharacter = prefab.GetComponent<PlayerCharacter>();
+        _playerCharacter._playerController = this;
+        _playerCharacter.isLocalCharacter = isLocalPlayer;
+
+        // Spawn the prefab on the server
+        NetworkServer.Spawn(prefab, connectionToClient);
+        //make sure to assign the player character to the client that spawned it
+       // TargetAssignPlayerCharacter(connectionToClient, prefab);
     }
 
-    // ClientRpc to set the player character on all clients
-    [ClientRpc]
-    private void RpcSetPlayerCharacter(GameObject playerCharacter)
+    [TargetRpc]
+    private void TargetAssignPlayerCharacter(NetworkConnection target, GameObject playerCharacter)
     {
-        _playerCharacter = playerCharacter;
+        _playerCharacter = playerCharacter.GetComponent<PlayerCharacter>();
     }
 
     private void Update()
     {
-        if (!isLocalPlayer || _playerCharacter == null)
+        if (!isLocalPlayer)
+        {
             return;
+        }
 
         // Handle input and send commands to the player character here...
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        //check to make sure our _playerCharacter is not null
+        if (_playerCharacter == null)
+        {
+            Debug.LogError("PlayerCharacter is null");
+            return;
+        }
+
+        _playerCharacter.HandleInput(horizontal, vertical);
     }
 
-    public GameObject GetPlayerCharacter()
+    public PlayerCharacter GetPlayerCharacter()
     {
         return _playerCharacter;
     }

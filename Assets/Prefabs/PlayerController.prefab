@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 494135782221739504}
   - component: {fileID: -8654996556860768648}
   m_Layer: 0
-  m_Name: PlayerPrefab
+  m_Name: PlayerController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,3 +65,4 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  _playerCharacterPrefab: {fileID: 7044221452937561554, guid: 13d9338df4e520849a2923a15fe33a39, type: 3}
