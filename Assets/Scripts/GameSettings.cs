@@ -20,7 +20,27 @@ public class GameSettings : ScriptableObject
         public float playerStartHealthDrain;
         public float playerStartHealthRegen;
 
-        // Add more settings as needed
+        //resources variable integers
+        public int StartWood;
+        public int StartStone;
+        public int StartFood;
+        public int StartWater;
+        public int StartRum;
+        public int StartGold;
+        public int StartCannonBalls;
+        
+        //world settings
+        public float WorldTime;
+        public float WorldTimeSpeed;
+        public int Day = 1;
+
+        public bool isDay = true;
+        public bool isRaining = false;
+        public bool isStorming = false;
+        public bool isFoggy = false;
+        public bool isSnowing = false;
+        public bool isSunny = true;
+        
     }
 
     public DifficultySettings EasyDifficulty;

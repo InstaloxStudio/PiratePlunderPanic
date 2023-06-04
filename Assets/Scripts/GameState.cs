@@ -1,4 +1,7 @@
-﻿public class GameState
+﻿public enum GameState
 {
-
+    MainMenu,
+    Playing,
+    Paused,
+    GameOver
 }
