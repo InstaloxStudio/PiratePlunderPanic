@@ -1,21 +1,25 @@
 ﻿using Mirror;
+using System;
 using UnityEngine;
-
+using UnityEngine.AI;
 
 public class PlayerCharacter : NetworkBehaviour
 {
-    public Animator _animator;
     public CharacterController _characterController;
     public float _speed = 5f;
-    public float turnSpeed = 10f;
+    public float turnSpeed = 1f;
     public PlayerController _playerController;
     public bool isLocalCharacter = false;
-    public bool useAnimator = false;
+
+    public NavMeshAgent agent;
+
+    public Action onArrived;
+
+    private Vector3 destination;
+
     private void Start()
     {
-        if (useAnimator)
-            _animator = GetComponent<Animator>();
-
+        agent = GetComponent<NavMeshAgent>();
         _characterController = GetComponent<CharacterController>();
     }
 
@@ -25,26 +29,86 @@ public class PlayerCharacter : NetworkBehaviour
         gameObject.name = "LocalPlayerCharacter";
     }
 
-    public void HandleInput(float horizontal, float vertical)
+    private void Update()
     {
-        Vector3 movement = new Vector3(horizontal, 0f, vertical);
-        movement = Vector3.ClampMagnitude(movement, 1f);
-        movement = transform.TransformDirection(movement);
-        movement *= _speed;
-
-        _characterController.Move(movement * Time.deltaTime);
-
-        if (movement != Vector3.zero)
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            Quaternion toRotation = Quaternion.LookRotation(movement, Vector3.up);
-            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
-            if (useAnimator)
-                _animator.SetBool("isRunning", true);
+            if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+            {
+                // Arrived
+                onArrived?.Invoke();
+                onArrived = null; // Clear out the action once it's been invoked
+            }
+        }
+    }
+
+    public virtual void HandleInput()
+    {
+        //left click
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                //check if we hit an interactable object
+                if (hit.collider.gameObject.TryGetComponent(out IInteractable interactable))
+                {
+                    interactable.Interact(this);
+                }
+            }
+        }
+
+        //right click
+        if (Input.GetMouseButtonDown(1))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                //check if hit is on a navmesh
+                var nearestPoint = GetNearestPointOnNavMesh(hit.point);
+                agent.SetDestination(nearestPoint);
+
+            }
+        }
+    }
+
+    public void SetDestination(Vector3 destination, Action onArrived = null)
+    {
+        var nearestPoint = GetNearestPointOnNavMesh(destination);
+        agent.SetDestination(nearestPoint);
+        this.onArrived = onArrived;
+        this.destination = nearestPoint;
+        //spawn a sphere at the nearest point
+        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere.transform.position = nearestPoint;
+    }
+
+
+    //get closest point on navmesh to a given point
+    public Vector3 GetNearestPointOnNavMesh(Vector3 position)
+    {
+        NavMeshHit navMeshHit;
+        if (NavMesh.SamplePosition(position, out navMeshHit, 1f, NavMesh.AllAreas))
+        {
+            return navMeshHit.position;
         }
         else
         {
-            if (useAnimator)
-                _animator.SetBool("isRunning", false);
+            if (NavMesh.SamplePosition(position, out navMeshHit, 100f, NavMesh.AllAreas))
+            {
+                return navMeshHit.position;
+            }
         }
+        return position;
+    }
+
+    public PlayerController GetPlayerController()
+    {
+        return _playerController;
+    }
+
+    public void SetPlayerController(PlayerController playerController)
+    {
+        _playerController = playerController;
     }
 }

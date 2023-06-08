@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Tree
   m_EditorClassIdentifier: 
   ResourceName: Tree
-  Sprite: {fileID: 0}
+  Sprite: {fileID: 67263144, guid: f65a690449b41b84594a9a5f4d39aa3d, type: 3}
   MaxStack: 0

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Sirenix.OdinInspector;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ResourceDatabase", menuName = "Resources/Database")]
-public class ResourceDatabase : ScriptableObject
+public class ResourceDatabase : SerializedScriptableObject
 {
     public Dictionary<string, ResourceType> resourceDictionary = new Dictionary<string, ResourceType>();
 }

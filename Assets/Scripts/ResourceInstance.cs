@@ -1,12 +1,22 @@
 ﻿using UnityEngine;
 
-public class ResourceInstance : MonoBehaviour
+public class ResourceInstance : MonoBehaviour,IInteractable
 {
     public ResourceType Type;
     public int Amount;
 
-    private void OnTriggerEnter(Collider other)
+    public void Highlight(PlayerCharacter interactor)
     {
-        // On collision with player, add resource to player's inventory
+
+    }
+
+    public virtual void Interact(PlayerCharacter interactor)
+    {
+
+    }
+
+    public void UnHighlight(PlayerCharacter interactor)
+    {
+
     }
 }
