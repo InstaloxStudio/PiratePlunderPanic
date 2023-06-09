@@ -1,12 +1,15 @@
 ﻿using Mirror;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
-public class AICharacter : NetworkBehaviour
+public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,IPointerExitHandler,IPointerClickHandler    
 {
     public NavMeshAgent _agent;
     public Transform _target;
+    public SpriteRenderer _spriteRenderer;
     public float _walkSpeed = 1.5f;
     public float _runSpeed = 3.5f;
     public float _dangerRadius = 10f;
@@ -15,15 +18,37 @@ public class AICharacter : NetworkBehaviour
     public float _attackDamage = 10f;
     public float _attackTimer = 0f;
 
-    public AIState _aiState = AIState.Idle;
     private bool _idleTimerRunning;
-    public float _idleTime=3;
+    public float _idleTime = 3;
     private bool _isWandering;
-    public float wanderTime=3;
+    public float _wanderTime = 3;
+
+    private Color _originalColor;
+    private Color _highlightColor = Color.white;
+
+    [SyncVar(hook = nameof(OnTargetChanged))]
+    public NetworkIdentity _targetIdentity;
+
+    [SyncVar(hook = nameof(OnAIStateChanged))]
+    public AIState _aiState = AIState.Idle;
+
+    [SyncVar(hook = nameof(OnHealthChanged))]
+    public float _currentHealth;
+
+    public bool _isDead = false;
+
+    public HealthComponent _healthComponent;
 
     public void Awake()
     {
-        _agent = TryGetComponent<NavMeshAgent>(out NavMeshAgent agent) ? agent : gameObject.AddComponent<NavMeshAgent>();
+        _healthComponent = TryGetComponent<HealthComponent>(out HealthComponent healthComponent)
+            ? healthComponent : gameObject.AddComponent<HealthComponent>();
+
+        _agent = TryGetComponent<NavMeshAgent>(out NavMeshAgent agent)
+            ? agent : gameObject.AddComponent<NavMeshAgent>();
+
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _originalColor = _spriteRenderer.color;
 
         _agent.speed = _walkSpeed;
         _agent.stoppingDistance = _attackRadius;
@@ -36,6 +61,11 @@ public class AICharacter : NetworkBehaviour
     {
         if (!isServer) return;
 
+        if (_isDead)
+        {
+            _aiState = AIState.Dead;
+            return;
+        }
 
         switch (_aiState)
         {
@@ -64,7 +94,7 @@ public class AICharacter : NetworkBehaviour
                 if (collider.CompareTag("Player"))
                 {
                     _target = collider.transform;
-                    _aiState  = AIState.Chase;
+                    _aiState = AIState.Chase;
                     break;
                 }
             }
@@ -103,7 +133,8 @@ public class AICharacter : NetworkBehaviour
         //play death animation
         //have the body stay on the ground for a while so the player can loot it
         //destroy the body
-
+        _agent.isStopped = true;
+        _spriteRenderer.color = Color.red;
     }
 
     private void Attack()
@@ -119,7 +150,6 @@ public class AICharacter : NetworkBehaviour
                 if (_attackTimer >= _attackRate)
                 {
                     _attackTimer = 0f;
-                    // _target.GetComponent<PlayerCharacter>().TakeDamage(_attackDamage);
                     //attack the target code goes here
 
                 }
@@ -138,7 +168,7 @@ public class AICharacter : NetworkBehaviour
     private void Chase()
     {
         //chase the target
-        if(_target==null)
+        if (_target == null)
         {
             _aiState = AIState.Idle;
             return;
@@ -152,7 +182,7 @@ public class AICharacter : NetworkBehaviour
             if (_attackTimer >= _attackRate)
             {
                 _attackTimer = 0f;
-                // _target.GetComponent<PlayerCharacter>().TakeDamage(_attackDamage);
+                // attack here
             }
         }
         else
@@ -185,7 +215,7 @@ public class AICharacter : NetworkBehaviour
     {
         _isWandering = true;
         WanderAroundRadius(_dangerRadius, transform.position);
-        yield return new WaitForSeconds(wanderTime);
+        yield return new WaitForSeconds(_wanderTime);
         _isWandering = false;
     }
 
@@ -215,6 +245,122 @@ public class AICharacter : NetworkBehaviour
         {
             _agent.SetDestination(hit.position);
         }
+    }
+
+    void OnTargetChanged(NetworkIdentity oldIdentity, NetworkIdentity newIdentity)
+    {
+        // handle the target change
+        _target = newIdentity?.transform;
+    }
+
+
+    void OnAIStateChanged(AIState oldState, AIState newState)
+    {
+        // handle the state change
+        _aiState = newState;
+    }
+
+    void OnHealthChanged(float oldHealth, float newHealth)
+    {
+        _currentHealth = newHealth;
+        _healthComponent.currentHealth = _currentHealth;
+    }
+
+    //coroutine to check for enemies nearby every x seconds
+    IEnumerator CheckForEnemies(float delay)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(delay);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, _dangerRadius);
+            foreach (Collider collider in colliders)
+            {
+                if (collider.CompareTag("Player"))
+                {
+                    _target = collider.transform;
+                    _aiState = AIState.Chase;
+                    break;
+                }
+            }
+        }
+    }
+
+    //method to return closest transform from a list of transforms
+    Transform GetClosestTransform(List<Transform> transforms)
+    {
+        Transform closestTransform = null;
+        float closestDistance = Mathf.Infinity;
+        foreach (Transform transform in transforms)
+        {
+            float distance = Vector3.Distance(transform.position, transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTransform = transform;
+            }
+        }
+        return closestTransform;
+    }
+
+    //method to knockback this object
+    public void Knockback(Vector3 direction, float force)
+    {
+        _agent.isStopped = true;
+        _agent.velocity = direction * force;
+        StartCoroutine(StopKnockback());
+    }
+    public IEnumerator StopKnockback()
+    {
+        yield return new WaitForSeconds(0.5f);
+        _agent.isStopped = false;
+
+
+    }
+
+    public void Interact(PlayerCharacter interactor)
+    {
+        CmdTakeDamage(interactor.netIdentity, 10);
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdTakeDamage(NetworkIdentity id, int damage)
+    {
+        Debug.Log("damaged by " + id);
+        _currentHealth -= damage;
+        _healthComponent.TakeDamage(damage);
+        if (_healthComponent.currentHealth <= 0)
+        {
+            _isDead = true;
+            _agent.isStopped = true;
+            _aiState = AIState.Dead;
+        }
+    }
+
+    public void Highlight(PlayerCharacter interactor)
+    {
+        Debug.Log("highlighted");
+        _spriteRenderer.color = _highlightColor;
+    }
+
+    public void UnHighlight(PlayerCharacter interactor)
+    {
+        Debug.Log("unhighlighted");
+        _spriteRenderer.color = _originalColor;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Highlight(null);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        UnHighlight(null);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+
     }
 }
 

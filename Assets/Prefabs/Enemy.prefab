@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ad40211e3946b8d4cb89c635e2c9380d, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8207547, g: 0.8207547, b: 0.8207547, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -113,6 +113,8 @@ GameObject:
   - component: {fileID: 7117106286606052756}
   - component: {fileID: 4574987255050817397}
   - component: {fileID: 4733302897537285153}
+  - component: {fileID: 18113169212894267}
+  - component: {fileID: 9156718270499271912}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -202,6 +204,7 @@ MonoBehaviour:
   syncInterval: 0
   _agent: {fileID: 4733302897537285153}
   _target: {fileID: 0}
+  _spriteRenderer: {fileID: 0}
   _walkSpeed: 1.5
   _runSpeed: 3.5
   _dangerRadius: 10
@@ -209,9 +212,12 @@ MonoBehaviour:
   _attackRate: 1
   _attackDamage: 10
   _attackTimer: 0
-  _aiState: 0
   _idleTime: 2.87
-  wanderTime: 3
+  _wanderTime: 3
+  _targetIdentity: {fileID: 0}
+  _aiState: 0
+  _currentHealth: 100
+  _healthComponent: {fileID: 0}
 --- !u!195 &4733302897537285153
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -234,3 +240,40 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!136 &18113169212894267
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6951322826014685699}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.92
+  m_Height: 4
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
+--- !u!114 &9156718270499271912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6951322826014685699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a146e6c552358c4fa03417bfc88b8ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 100
