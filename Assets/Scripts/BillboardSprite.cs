@@ -3,7 +3,6 @@
 public class BillboardSprite : MonoBehaviour
 {
     public Camera cam;
-    public SpriteRenderer Sprite;
     public bool lockXZ = false;
 
     private void Start()
@@ -18,20 +17,6 @@ public class BillboardSprite : MonoBehaviour
         {
             Debug.LogError("No camera available");
         }
-        if (Sprite == null)
-            Sprite = GetComponent<SpriteRenderer>();
-
-        if (Sprite == null)
-        {
-            Sprite = GetComponentInChildren<SpriteRenderer>();
-        }
-
-        if (Sprite == null)
-        {
-            Debug.LogError("No sprite renderer available");
-        }
-
-
     }
 
     private void Update()

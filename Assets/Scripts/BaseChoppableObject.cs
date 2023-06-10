@@ -51,7 +51,6 @@ public class BaseChoppableObject : BaseInteractableObject
     {
         Debug.Log("Chop count changed from " + oldChopCount + " to " + newChopCount);
         //set sprite color based on chop count
-        _spriteRenderer.color = Color.Lerp(Color.white, Color.red, (float)newChopCount / _chopCountMax);
 
     }
 

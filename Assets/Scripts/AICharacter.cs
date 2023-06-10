@@ -9,7 +9,6 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
 {
     public NavMeshAgent _agent;
     public Transform _target;
-    public SpriteRenderer _spriteRenderer;
     public float _walkSpeed = 1.5f;
     public float _runSpeed = 3.5f;
     public float _dangerRadius = 10f;
@@ -47,14 +46,9 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
         _agent = TryGetComponent<NavMeshAgent>(out NavMeshAgent agent)
             ? agent : gameObject.AddComponent<NavMeshAgent>();
 
-        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _originalColor = _spriteRenderer.color;
-
         _agent.speed = _walkSpeed;
         _agent.stoppingDistance = _attackRadius;
         _agent.autoBraking = false;
-
-
     }
 
     public void Update()
@@ -134,7 +128,6 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
         //have the body stay on the ground for a while so the player can loot it
         //destroy the body
         _agent.isStopped = true;
-        _spriteRenderer.color = Color.red;
     }
 
     private void Attack()
@@ -339,13 +332,11 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
     public void Highlight(PlayerCharacter interactor)
     {
         Debug.Log("highlighted");
-        _spriteRenderer.color = _highlightColor;
     }
 
     public void UnHighlight(PlayerCharacter interactor)
     {
         Debug.Log("unhighlighted");
-        _spriteRenderer.color = _originalColor;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
