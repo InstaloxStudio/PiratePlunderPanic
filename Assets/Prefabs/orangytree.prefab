@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3934807806521991519}
-  - component: {fileID: 8307048437802591487}
   - component: {fileID: 3584702789004376343}
   - component: {fileID: 5154681145886303790}
   - component: {fileID: 3186013431042556253}
@@ -35,22 +34,8 @@ Transform:
   m_Children:
   - {fileID: 6717700987296705572}
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 65.84, z: 0}
---- !u!114 &8307048437802591487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3931600530206274345}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c6060273aaaf704fa8d1734e08baf9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cam: {fileID: 0}
-  lockXZ: 1
 --- !u!208 &3584702789004376343
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -99,7 +84,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _spriteRenderer: {fileID: 0}
   _highlightColor: {r: 1, g: 1, b: 1, a: 1}
   _canInteract: 1
   _canHighlight: 1
@@ -250,4 +234,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
-  lockXZ: 0
+  lockXZ: 1

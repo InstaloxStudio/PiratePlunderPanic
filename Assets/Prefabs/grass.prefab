@@ -30,7 +30,7 @@ Transform:
   m_Children:
   - {fileID: 1918696927795267698}
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2413018372316338068
 GameObject:
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6330218662315696720}
   - component: {fileID: 6779696184220303129}
   - component: {fileID: 5460740714660279012}
+  - component: {fileID: 6446595353046123462}
   m_Layer: 0
   m_Name: Quad
   m_TagString: Untagged
@@ -94,7 +95,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ea4b7f62d2e372646a09d025fe5b55e0, type: 2}
+  - {fileID: 2100000, guid: b2530acbbbf0309418841c580a24afe3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -133,8 +134,22 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &6446595353046123462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2413018372316338068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c6060273aaaf704fa8d1734e08baf9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 0}
+  lockXZ: 1
