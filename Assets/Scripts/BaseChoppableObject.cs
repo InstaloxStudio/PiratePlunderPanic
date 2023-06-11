@@ -11,11 +11,20 @@ public class BaseChoppableObject : BaseInteractableObject
 
     public float _chopDistance = 2f;
 
+    public Texture2D _mainTexture;
+
+    private void Awake()
+    {
+        //get child object's material and set its texture to the main texture
+        Material material = GetComponentInChildren<MeshRenderer>().material;
+        material.mainTexture = _mainTexture;
+
+    }
+
     [Command(requiresAuthority = false)]
     public void CmdChop(NetworkIdentity identity)
     {
         PlayerCharacter interactor = identity.GetComponent<PlayerCharacter>();
-
 
         Debug.Log(interactor.name + " chopping " + gameObject.name);
         _chopCount++;

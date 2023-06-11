@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 019d6f9dfea9c314db9cc9f8bbc72a45, type: 3}
+  m_Name: SunRise
+  m_EditorClassIdentifier: 
+  timePeriod: 1
+  lightColor: {r: 0.4339623, g: 0.31266126, b: 0.18259169, a: 1}
+  lightTemperature: 4000
+  lightIntensity: 8137.3
+  fogDensity: 0.01
+  fogColor: {r: 0.09803921, g: 0.16840546, b: 0.21568628, a: 1}

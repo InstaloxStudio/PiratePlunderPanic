@@ -12,6 +12,7 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
     public float _walkSpeed = 1.5f;
     public float _runSpeed = 3.5f;
     public float _dangerRadius = 10f;
+    public float _wanderRadius = 5f;
     public float _attackRadius = 2f;
     public float _attackRate = 1f;
     public float _attackDamage = 10f;
@@ -49,6 +50,11 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
         _agent.speed = _walkSpeed;
         _agent.stoppingDistance = _attackRadius;
         _agent.autoBraking = false;
+
+        //randomize the starting wander time so that the AI don't all wander at the same time
+        _wanderTime = Random.Range(1f, 5f);
+        _idleTimerRunning = true;
+        
     }
 
     public void Update()
@@ -207,7 +213,7 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
     private IEnumerator Wandering()
     {
         _isWandering = true;
-        WanderAroundRadius(_dangerRadius, transform.position);
+        WanderAroundRadius(_wanderRadius, transform.position);
         yield return new WaitForSeconds(_wanderTime);
         _isWandering = false;
     }
@@ -218,14 +224,6 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
         yield return new WaitForSeconds(_idleTime);
         _aiState = AIState.Wander;
         _idleTimerRunning = false;
-    }
-
-    public void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _dangerRadius);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _attackRadius);
     }
 
 
