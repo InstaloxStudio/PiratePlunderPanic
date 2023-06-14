@@ -171,7 +171,7 @@ NavMeshObstacle:
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 2.17, z: 0}
   m_TimeToStationary: 0
 --- !u!114 &2651090503059947953
 MonoBehaviour:

@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,6 +57,9 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
         _idleTimerRunning = true;
         
     }
+
+    
+
 
     public void Update()
     {
