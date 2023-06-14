@@ -76,6 +76,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: OakTree Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 5681161784077048489, guid: 7d4b73046cd1d234c81ce410e04c025d, type: 3}
+      propertyPath: m_TagString
+      value: Tree
+      objectReference: {fileID: 0}
     - target: {fileID: 6215613412252393017, guid: 7d4b73046cd1d234c81ce410e04c025d, type: 3}
       propertyPath: m_CastShadows
       value: 1
