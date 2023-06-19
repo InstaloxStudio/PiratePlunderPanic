@@ -53,20 +53,32 @@ public class PlayerCharacter : NetworkBehaviour
                 //check if we hit an interactable object
                 if (hit.collider.gameObject.TryGetComponent(out IInteractable interactable))
                 {
+                   // Vector3 nearestPoint = GetNearestPointOnNavMesh(hit.point);
+                   // PositionMarker.Instance.SetNewPosition(nearestPoint);
                     interactable.Interact(this);
                 }
             }
         }
 
         //right click
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButton(1))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                //check if hit is on a navmesh
-                var nearestPoint = GetNearestPointOnNavMesh(hit.point);
-                agent.SetDestination(nearestPoint);
+                //Debug.Log("Hit: " + hit.collider.gameObject.name);
+                //check if we hit the ground
+                if (hit.collider.CompareTag("Floor"))
+                {
+                    //set position marker
+                    PositionMarker.Instance.SetNewPosition(hit.point);
+                    //check if hit is on a navmesh
+                    var nearestPoint = GetNearestPointOnNavMesh(hit.point);
+                    agent.SetDestination(nearestPoint);
+                }
+
+
+
 
             }
         }
@@ -79,8 +91,8 @@ public class PlayerCharacter : NetworkBehaviour
         this.onArrived = onArrived;
         this.destination = nearestPoint;
         //spawn a sphere at the nearest point
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere.transform.position = nearestPoint;
+       // GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+       // sphere.transform.position = nearestPoint;
     }
 
 

@@ -7,6 +7,7 @@ TagManager:
   - Tree
   - Enemy
   - Interactable
+  - Floor
   layers:
   - Default
   - TransparentFX

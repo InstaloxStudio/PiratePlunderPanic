@@ -7,7 +7,6 @@ using Sirenix.OdinInspector;
 using System.Collections;
 using System.Reflection;
 
-
 public class DevConsole : MonoBehaviour
 {
     public static DevConsole Instance { get; set; }
@@ -226,7 +225,7 @@ public class DevConsole : MonoBehaviour
     {
         if (args.Length < 4)
         {
-            DevConsole.Instance.PrintToConsole("Invalid arguments. Usage: change_background_color R G B");
+            DevConsole.Instance.PrintToConsole("Invalid arguments. Usage: bg.color R G B");
             return;
         }
 
@@ -341,11 +340,11 @@ public class DevConsole : MonoBehaviour
             //check if the command starts with the input
             if (commandInDictionary.Key.StartsWith(command))
             {
-                isAutoCompleting = true;
 
                 //if tab is pressed, autocomplete the command
                 if (Input.GetKeyDown(KeyCode.Tab))
                 {
+                    Debug.Log("Autocompleting command");
                     ConsoleInput.text = commandInDictionary.Key;
 
                     //set the caret position to the end of the input
@@ -355,6 +354,8 @@ public class DevConsole : MonoBehaviour
                     isAutoCompleting = false;
                     break;
                 }
+                isAutoCompleting = true;
+
             }
         }
     }
@@ -396,6 +397,62 @@ public class DevConsole : MonoBehaviour
     {
         PrintToConsole("List of commands:");
         ListCommands();
+    }
+
+    //command to set all billboardsprites to lock xz rotation
+    [DevConsoleCommand("/bb.lock")]
+    void LockBillboardRotationCommand(string[] args)
+    {
+        //grab the first argument, either true or false
+        string arg = args[1];
+
+        switch (arg)
+        {
+            case "true":
+                //loop through all billboardsprites
+                foreach (BillboardSprite billboardSprite in FindObjectsOfType<BillboardSprite>())
+                {
+                    //set the lock xz rotation to true
+                    billboardSprite.lockXZ = true;
+                }
+                break;
+
+            case "false":
+                //loop through all billboardsprites
+                foreach (BillboardSprite billboardSprite in FindObjectsOfType<BillboardSprite>())
+                {
+                    //set the lock xz rotation to false
+                    billboardSprite.lockXZ = false;
+                }
+                break;
+
+            case "toggle":
+                //loop through all billboardsprites
+                foreach (BillboardSprite billboardSprite in FindObjectsOfType<BillboardSprite>())
+                {
+                    //toggle the lock xz rotation
+                    billboardSprite.lockXZ = !billboardSprite.lockXZ;
+                }
+                break;
+
+            case "trees":
+                //loop through all gameobjects with the tag tree
+                foreach (GameObject tree in GameObject.FindGameObjectsWithTag("Tree"))
+                {
+                    var bb = tree.GetComponentInChildren<BillboardSprite>();
+                    if (bb != null)
+                    {
+                        //toggle the lock xz rotation
+                        bb.lockXZ = !bb.lockXZ;
+                    }
+                }
+                break;
+            default:
+                Debug.Log("argument not recognized : " + arg);
+                PrintToConsole("Invalid argument. Please enter either true,false,toggle, or trees");
+                break;
+        }
+
     }
 
 }

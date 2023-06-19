@@ -108,6 +108,14 @@ public class ScatterPrefabLayers
                                                   UnityEngine.Random.Range(ScatterProperties.minColor.g, ScatterProperties.maxColor.g),
                                                   UnityEngine.Random.Range(ScatterProperties.minColor.b, ScatterProperties.maxColor.b));
                     renderer.sharedMaterial.color = randomColor;
+
+                    //set the color of this objects material using a material property block
+                    MaterialPropertyBlock block = new MaterialPropertyBlock();
+                    block.SetColor("_BaseColor", randomColor);
+                    renderer.SetPropertyBlock(block);
+                        
+
+
                 }
 
                 SpawnedLayerObjects.Add(instance);

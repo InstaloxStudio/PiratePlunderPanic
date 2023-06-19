@@ -27,6 +27,7 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
     private Color _originalColor;
     private Color _highlightColor = Color.white;
 
+
     [SyncVar(hook = nameof(OnTargetChanged))]
     public NetworkIdentity _targetIdentity;
 
@@ -40,8 +41,17 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
 
     public HealthComponent _healthComponent;
 
+    public EyeController _eyeController;
+
+    public Material _material;
+
     public void Awake()
     {
+        _material = GetComponentInChildren<MeshRenderer>().material;
+        _originalColor = _material.color;
+
+        _eyeController = GetComponentInChildren<EyeController>();
+
         _healthComponent = TryGetComponent<HealthComponent>(out HealthComponent healthComponent)
             ? healthComponent : gameObject.AddComponent<HealthComponent>();
 
@@ -55,7 +65,8 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
         //randomize the starting wander time so that the AI don't all wander at the same time
         _wanderTime = Random.Range(1f, 5f);
         _idleTimerRunning = true;
-        
+
+        _eyeController.Init();
     }
 
     
@@ -101,12 +112,20 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
                     _aiState = AIState.Chase;
                     break;
                 }
+                else
+                {
+                    _eyeController.SetTarget(collider.transform);
+                    _eyeController.Tick();
+                }
             }
         }
         else
         {
+            //we have a target so 
             if (_target.CompareTag("Player"))
             {
+                _eyeController.SetTarget(_target);
+                _eyeController.Tick();
                 float distance = Vector3.Distance(transform.position, _target.position);
                 if (distance <= _attackRadius)
                 {
@@ -116,6 +135,7 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
                     {
                         _attackTimer = 0f;
                         // _target.GetComponent<PlayerCharacter>().TakeDamage(_attackDamage);
+                        //Debug.Log("Attacking Player");
                     }
                 }
                 else
@@ -320,7 +340,7 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
     [Command(requiresAuthority = false)]
     public void CmdTakeDamage(NetworkIdentity id, int damage)
     {
-        Debug.Log("damaged by " + id);
+       // Debug.Log("damaged by " + id);
         _currentHealth -= damage;
         _healthComponent.TakeDamage(damage);
         if (_healthComponent.currentHealth <= 0)
@@ -333,12 +353,12 @@ public class AICharacter : NetworkBehaviour, IInteractable,IPointerEnterHandler,
 
     public void Highlight(PlayerCharacter interactor)
     {
-        Debug.Log("highlighted");
+        _material.SetColor(name: "_BaseColor", _highlightColor);
     }
 
     public void UnHighlight(PlayerCharacter interactor)
     {
-        Debug.Log("unhighlighted");
+        _material.SetColor(name: "_BaseColor", _originalColor);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
